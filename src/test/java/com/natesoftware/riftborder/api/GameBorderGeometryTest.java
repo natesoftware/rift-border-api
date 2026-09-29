@@ -59,12 +59,16 @@ class GameBorderGeometryTest {
     }
 
     @Test
-    void anchorYDefaultsToJustUnderTheBuildLimitCappedAt319() {
-        assertEquals(319, new GameBorder(plugin, world, 0, 64, 0).anchorY);
+    void anchorYDefaultsToJustOutsideTheBuildLimit() {
+        assertEquals(320, new GameBorder(plugin, world, 0, 64, 0).anchorY);
 
         World shortWorld = mock(World.class);
         when(shortWorld.getMaxHeight()).thenReturn(256);
-        assertEquals(255, new GameBorder(plugin, shortWorld, 0, 64, 0).anchorY);
+        assertEquals(256, new GameBorder(plugin, shortWorld, 0, 64, 0).anchorY);
+
+        World tallWorld = mock(World.class);
+        when(tallWorld.getMaxHeight()).thenReturn(2032);
+        assertEquals(2032, new GameBorder(plugin, tallWorld, 0, 64, 0).anchorY);
     }
 
     // Callers built against 4.0 and earlier still call withGrid, and it must neither throw nor change anything.
@@ -74,7 +78,7 @@ class GameBorderGeometryTest {
         GameBorder border = new GameBorder(plugin, world, 0, 64, 0);
         assertSame(border, border.withGrid(0, -1));
         assertSame(border, border.withGrid(80, 1200));
-        assertEquals(319, border.anchorY);
+        assertEquals(320, border.anchorY);
     }
 
     @Test

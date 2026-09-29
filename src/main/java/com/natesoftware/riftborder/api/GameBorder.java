@@ -118,7 +118,7 @@ public class GameBorder {
      * centred on and is fixed for the border's life, while the horizontal centre moves with every transition and returns to
      * these values on each {@link #spawn(double)}. plugin owns every task and wall entity the border creates. The radius is 0
      * until spawn or a shape call sets it, and there is no ceiling or floor until a shape call sets one. Wall displays default to
-     * a Y of 319 or the world's max build height minus one, whichever is lower. Nothing is scheduled or spawned here.
+     * the world's max build height, one block above the highest one. Nothing is scheduled or spawned here.
      */
     public GameBorder(Plugin plugin, World world, double centerX, double centerY, double centerZ) {
         this.plugin = plugin;
@@ -128,8 +128,8 @@ public class GameBorder {
         this.centerZ = centerZ;
         this.initialCenterX = centerX;
         this.initialCenterZ = centerZ;
-        // Above terrain so blocks don't occlude the anchors, but never above what this world can hold.
-        this.anchorY = Math.min(319, world.getMaxHeight() - 1);
+        // Just outside build height: vanilla draws an entity inside it only while its section is visible, and sky sections rarely are
+        this.anchorY = world.getMaxHeight();
         this.renderer = new BorderRenderer(this);
         this.particleRenderer = new ParticleBorderRenderer(this);
         this.animator = new BorderShrinkAnimator(this);
@@ -219,9 +219,11 @@ public class GameBorder {
     }
 
     /**
-     * Y each viewer's wall display sits at. Defaults to 319 or the world's max build height minus one, whichever is lower, so it
-     * sits in open sky light. The shader draws the full cylinder whatever the display height. Read whenever a display is
-     * spawned, so a change reaches each viewer as their display is next replaced. Returns this for chaining.
+     * Y each viewer's wall display sits at. Defaults to the world's max build height, one block above the highest one: vanilla
+     * clients only draw an entity inside build height while its chunk section is on screen, so a display inside it vanishes
+     * whenever the viewer looks away from that section. Keep it at or above the max build height (or below the min). The shader
+     * draws the full cylinder whatever the display height. Read whenever a display is spawned, so a change reaches each viewer
+     * as their display is next replaced. Returns this for chaining.
      */
     public GameBorder withAnchorY(int y) {
         this.anchorY = y;

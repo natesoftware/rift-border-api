@@ -41,7 +41,7 @@ repositories {
 }
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
-    compileOnly("com.github.natesoftware:rift-border-api:v4.1.0")
+    compileOnly("com.github.natesoftware:rift-border-api:v4.1.1")
 }
 ```
 
@@ -59,7 +59,7 @@ at all; a bundled copy would be cut off from it and show everyone particles.
 Package `com.natesoftware.riftborder.api`. To build against local changes
 instead, clone this repo beside your plugin, add
 `includeBuild("../rift-border-api")` to `settings.gradle.kts`, and use
-`compileOnly("com.natesoftware:rift-border-api:4.1.0")`.
+`compileOnly("com.natesoftware:rift-border-api:4.1.1")`.
 
 ## Usage
 
@@ -246,9 +246,11 @@ The shader wall is mounted on one invisible display per viewer, spawned where
 they stand and shown to them alone, since any single display draws the whole
 cylinder. A player who moves more than 32 blocks from theirs gets a fresh one
 where they stand. There is no radius cap and no chunk loading.
-`withAnchorY(y)` sets the height the displays sit at; it defaults to just under
-the build limit, in open sky light. `withGrid` sized the old fixed grid of
-displays and does nothing since 4.1.0.
+`withAnchorY(y)` sets the height the displays sit at; it defaults to the
+world's max build height, one block above the highest. Keep it outside the build
+height: vanilla clients only draw an entity inside it while its chunk section is
+on screen, so a display up in empty sky would vanish for anyone not on Sodium.
+`withGrid` sized the old fixed grid of displays and does nothing since 4.1.0.
 
 ### Pack contract
 
